@@ -32,8 +32,8 @@ struct SharedMem;
 class CClient;
 class CScriptingModule;
 struct CPathsInfo;
-class CISer;
-class COSer;
+class BinaryDeserializer;
+class BinarySerializer;
 namespace boost { class thread; }
 
 /// structure to handle running server and connecting to it
@@ -59,7 +59,7 @@ public:
 	static CConnection * justConnectToServer(const std::string &host = "", const std::string &port = ""); //connects to given host without taking any other actions (like setting up server)
 
 	CServerHandler(bool runServer = false);
-	~CServerHandler();
+	virtual ~CServerHandler();
 };
 
 template<typename T>
@@ -72,7 +72,6 @@ class ThreadSafeVector
 	boost::condition_variable cond;
 
 public:
-
 	void pushBack(const T &item)
 	{
 		TLock lock(mx);
@@ -239,10 +238,10 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 
-	void serialize(COSer &h, const int version);
-	void serialize(CISer &h, const int version);
+	void serialize(BinarySerializer & h, const int version);
+	void serialize(BinaryDeserializer & h, const int version);
 
-	void serialize(COSer &h, const int version, const std::set<PlayerColor>& playerIDs);
-	void serialize(CISer &h, const int version, const std::set<PlayerColor>& playerIDs);
+	void serialize(BinarySerializer & h, const int version, const std::set<PlayerColor>& playerIDs);
+	void serialize(BinaryDeserializer & h, const int version, const std::set<PlayerColor>& playerIDs);
 	void battleFinished();
 };

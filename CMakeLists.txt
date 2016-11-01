@@ -235,7 +235,7 @@ endif()
 #    Installation section             #
 #######################################
 
-# For apple this files will be already inside vcmiclient bundle
+# For apple these files will be already inside vcmiclient bundle
 if (NOT APPLE)
 	# copy whole directory but .svn control files
 	install(DIRECTORY config DESTINATION ${DATA_DIR} PATTERN ".svn" EXCLUDE)
@@ -342,3 +342,6 @@ endif()
 
 INCLUDE(CPack)
 
+include(GetGitRevisionDescription)
+get_git_head_revision(GIT_REFSPEC GIT_SHA1)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_BINARY_DIR}/Version.cpp" @ONLY)

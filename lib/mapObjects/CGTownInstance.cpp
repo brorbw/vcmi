@@ -651,15 +651,25 @@ void CGTownInstance::onHeroVisit(const CGHeroInstance * h) const
 	}
 	else if(h->visitablePos() == visitablePos())
 	{
-		if (h->commander && !h->commander->alive) //rise commander. TODO: interactive script
+		bool commander_recover = h->commander && !h->commander->alive;
+		if (commander_recover) // rise commander from dead
 		{
 			SetCommanderProperty scp;
 			scp.heroid = h->id;
 			scp.which = SetCommanderProperty::ALIVE;
 			scp.amount = 1;
-			cb->sendAndApply (&scp);
+			cb->sendAndApply(&scp);
 		}
 		cb->heroVisitCastle(this, h);
+		// TODO(vmarkovtsev): implement payment for rising the commander
+		if (commander_recover) // info window about commander
+		{
+			InfoWindow iw;
+			iw.player = h->tempOwner;
+			iw.text << h->commander->getName();
+			iw.components.push_back(Component(*h->commander));
+			cb->showInfoDialog(&iw);
+		}
 	}
 	else
 	{
@@ -1232,6 +1242,9 @@ CBuilding::TRequired CGTownInstance::genBuildingRequirements(BuildingID buildID,
 {
 	const CBuilding * building = town->buildings.at(buildID);
 
+	//TODO: find better solution to prevent infinite loops
+	std::set<BuildingID> processed;
+
 	std::function<CBuilding::TRequired::Variant(const BuildingID &)> dependTest =
 	[&](const BuildingID & id) -> CBuilding::TRequired::Variant
 	{
@@ -1240,18 +1253,20 @@ CBuilding::TRequired CGTownInstance::genBuildingRequirements(BuildingID buildID,
 
 		if (!hasBuilt(id))
 		{
-			requirements.expressions.push_back(id);
-
-			if (!deep)
-			{
-				return requirements;
-			}
+			if (deep)
+				requirements.expressions.push_back(id);
+			else
+				return id;
 		}
 
-		if (build->upgrade != BuildingID::NONE)
-			requirements.expressions.push_back(dependTest(build->upgrade));
+		if(!vstd::contains(processed, id))
+		{
+			processed.insert(id);
+			if (build->upgrade != BuildingID::NONE)
+				requirements.expressions.push_back(dependTest(build->upgrade));
 
-		requirements.expressions.push_back(build->requirements.morph(dependTest));
+			requirements.expressions.push_back(build->requirements.morph(dependTest));
+		}
 		return requirements;
 	};
 
@@ -1261,6 +1276,7 @@ CBuilding::TRequired CGTownInstance::genBuildingRequirements(BuildingID buildID,
 		const CBuilding * upgr = town->buildings.at(building->upgrade);
 
 		requirements.expressions.push_back(dependTest(upgr->bid));
+		processed.clear();
 	}
 	requirements.expressions.push_back(building->requirements.morph(dependTest));
 

@@ -142,7 +142,6 @@ void CGPandoraBox::giveContentsAfterExp(const CGHeroInstance *h) const
 	{
 		std::set<SpellID> spellsToGive;
 
-		std::vector<ConstTransitivePtr<CSpell> > * sp = &VLC->spellh->objects;
 		auto i = spells.cbegin();
 		while (i != spells.cend())
 		{
@@ -152,12 +151,13 @@ void CGPandoraBox::giveContentsAfterExp(const CGHeroInstance *h) const
 
 			for (; i != spells.cend(); i++)
 			{
-				if ((*sp)[*i]->level <= h->getSecSkillLevel(SecondarySkill::WISDOM) + 2) //enough wisdom
+				const CSpell * sp = (*i).toSpell();
+				if(h->canLearnSpell(sp))
 				{
 					iw.components.push_back(Component(Component::SPELL, *i, 0, 0));
 					spellsToGive.insert(*i);
 				}
-				if (spellsToGive.size() == 8) //display up to 8 spells at once
+				if(spellsToGive.size() == 8) //display up to 8 spells at once
 				{
 					break;
 				}

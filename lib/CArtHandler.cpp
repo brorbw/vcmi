@@ -440,13 +440,13 @@ void CArtHandler::loadGrowingArt(CGrowingArtifact * art, const JsonNode & node)
 {
 	for (auto b : node["growing"]["bonusesPerLevel"].Vector())
 	{
-		auto bonus = JsonUtils::parseBonus (b["bonus"]);
-		art->bonusesPerLevel.push_back (std::pair <ui16, Bonus> (b["level"].Float(), *bonus));
+		art->bonusesPerLevel.push_back(std::pair <ui16, Bonus>(b["level"].Float(), Bonus()));
+		JsonUtils::parseBonus(b["bonus"], &art->bonusesPerLevel.back().second);
 	}
 	for (auto b : node["growing"]["thresholdBonuses"].Vector())
 	{
-		auto bonus = JsonUtils::parseBonus (b["bonus"]);
-		art->thresholdBonuses.push_back (std::pair <ui16, Bonus> (b["level"].Float(), *bonus));
+		art->thresholdBonuses.push_back(std::pair <ui16, Bonus>(b["level"].Float(), Bonus()));
+		JsonUtils::parseBonus(b["bonus"], &art->thresholdBonuses.back().second);
 	}
 }
 
@@ -1347,11 +1347,6 @@ si32 CArtifactSet::getArtTypeId(ArtifactPosition pos) const
 		return -1;
 	}
 	return a->artType->id;
-}
-
-CArtifactSet::~CArtifactSet()
-{
-
 }
 
 ArtSlotInfo & CArtifactSet::retreiveNewArtSlot(ArtifactPosition slot)

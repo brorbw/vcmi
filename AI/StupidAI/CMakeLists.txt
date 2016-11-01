@@ -5,8 +5,8 @@ include_directories(${Boost_INCLUDE_DIRS} ${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_D
 
 set(stupidAI_SRCS
 		StdInc.cpp
-        StupidAI.cpp
-        main.cpp
+		StupidAI.cpp
+		main.cpp
 )
 
 add_library(StupidAI SHARED ${stupidAI_SRCS})

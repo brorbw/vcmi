@@ -99,6 +99,7 @@ public:
 	~SDLImage();
 
 	void draw(SDL_Surface *where, int posX=0, int posY=0, Rect *src=nullptr,  ui8 alpha=255) const override;
+
 	void playerColored(PlayerColor player) override;
 	int width() const override;
 	int height() const override;
@@ -169,6 +170,8 @@ private:
 	//if true all frames will be stored in compressed (RLE) state
 	const bool compressed;
 
+	bool preloaded;
+
 	//loader, will be called by load(), require opened def file for loading from it. Returns true if image is loaded
 	bool loadFrame(CDefFile * file, size_t frame, size_t group);
 
@@ -195,10 +198,6 @@ public:
 	CAnimation();
 	~CAnimation();
 
-    //static method for debugging - print info about loaded animations
-	static void getAnimInfo();
-	static std::set<CAnimation*> loadedAnims;
-
 	//add custom surface to the selected position.
 	void setCustom(std::string filename, size_t frame, size_t group=0);
 
@@ -208,6 +207,7 @@ public:
 	//all available frames
 	void load  ();
 	void unload();
+	void preload();
 
 	//all frames from group
 	void loadGroup  (size_t group);

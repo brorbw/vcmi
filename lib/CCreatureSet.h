@@ -30,6 +30,7 @@ public:
 	CStackBasicDescriptor();
 	CStackBasicDescriptor(CreatureID id, TQuantity Count);
 	CStackBasicDescriptor(const CCreature *c, TQuantity Count);
+	virtual ~CStackBasicDescriptor() = default;
 
 	virtual void setType(const CCreature * c);
 
@@ -82,7 +83,7 @@ public:
 	CStackInstance();
 	CStackInstance(CreatureID id, TQuantity count);
 	CStackInstance(const CCreature *cre, TQuantity count);
-	~CStackInstance();
+	virtual ~CStackInstance();
 
 	void setType(CreatureID creID);
 	void setType(const CCreature * c) override;
@@ -110,7 +111,7 @@ public:
 	void init() override;
 	CCommanderInstance();
 	CCommanderInstance (CreatureID id);
-	~CCommanderInstance();
+	virtual ~CCommanderInstance();
 	void setAlive (bool alive);
 	void giveStackExp (TExpType exp) override;
 	void levelUp ();

@@ -110,6 +110,7 @@
 			<Add option="-DBOOST_SYSTEM_NO_DEPRECATED" />
 			<Add option="-D_WIN32_WINNT=0x0501" />
 			<Add option="-D_WIN32" />
+			<Add option="-DVCMI_NO_EXTRA_VERSION" />
 			<Add directory="." />
 			<Add directory="$(#sdl2.include)" />
 			<Add directory="$(#zlib.include)" />
@@ -121,6 +122,7 @@
 			<Add directory="$(#zlib.lib)" />
 		</Linker>
 		<Unit filename="../Global.h" />
+		<Unit filename="../Version.h" />
 		<Unit filename="../include/vstd/CLoggerBase.h" />
 		<Unit filename="AI_Base.h" />
 		<Unit filename="BattleAction.cpp" />
@@ -173,8 +175,6 @@
 		<Unit filename="CTownHandler.cpp" />
 		<Unit filename="CTownHandler.h" />
 		<Unit filename="CondSh.h" />
-		<Unit filename="Connection.cpp" />
-		<Unit filename="Connection.h" />
 		<Unit filename="ConstTransitivePtr.h" />
 		<Unit filename="FunctionList.h" />
 		<Unit filename="GameConstants.cpp" />
@@ -321,6 +321,20 @@
 		<Unit filename="rmg/CZoneGraphGenerator.h" />
 		<Unit filename="rmg/CZonePlacer.cpp" />
 		<Unit filename="rmg/CZonePlacer.h" />
+		<Unit filename="serializer/BinaryDeserializer.cpp" />
+		<Unit filename="serializer/BinaryDeserializer.h" />
+		<Unit filename="serializer/BinarySerializer.cpp" />
+		<Unit filename="serializer/BinarySerializer.h" />
+		<Unit filename="serializer/CLoadIntegrityValidator.cpp" />
+		<Unit filename="serializer/CLoadIntegrityValidator.h" />
+		<Unit filename="serializer/CMemorySerializer.cpp" />
+		<Unit filename="serializer/CMemorySerializer.h" />
+		<Unit filename="serializer/CSerializer.cpp" />
+		<Unit filename="serializer/CSerializer.h" />
+		<Unit filename="serializer/CTypeList.cpp" />
+		<Unit filename="serializer/CTypeList.h" />
+		<Unit filename="serializer/Connection.cpp" />
+		<Unit filename="serializer/Connection.h" />
 		<Unit filename="serializer/JsonDeserializer.cpp" />
 		<Unit filename="serializer/JsonDeserializer.h" />
 		<Unit filename="serializer/JsonSerializeFormat.cpp" />

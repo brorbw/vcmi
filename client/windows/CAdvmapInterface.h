@@ -8,7 +8,6 @@
 
 #include "../../lib/spells/ViewSpellInt.h"
 
-class CDefHandler;
 class CCallback;
 struct CGPath;
 class CAdvMapInt;
@@ -121,6 +120,7 @@ public:
 
 	enum{LEFT=1, RIGHT=2, UP=4, DOWN=8};
 	ui8 scrollingDir; //uses enum: LEFT RIGHT, UP, DOWN
+	bool scrollingState;
 
 	enum{NA, INGAME, WAITING} state;
 
@@ -130,25 +130,25 @@ public:
 
 	EAdvMapMode mode;
 	float worldViewScale;
-	
+
 	struct WorldViewOptions
 	{
 		bool showAllTerrain; //for expert viewEarth
-		
+
 		std::vector<ObjectPosInfo> iconPositions;
-		
+
 		WorldViewOptions();
-		
+
 		void clear();
-		
-		void adjustDrawingInfo(MapDrawingInfo & info);		
+
+		void adjustDrawingInfo(MapDrawingInfo & info);
 	};
-	
-	WorldViewOptions worldViewOptions; 	
+
+	WorldViewOptions worldViewOptions;
 
 	SDL_Surface * bg;
 	SDL_Surface * bgWorldView;
-	std::vector<CDefHandler *> gems;
+	std::vector<CAnimImage *> gems;
 	CMinimap minimap;
 	CGStatusBar statusbar;
 
@@ -175,7 +175,7 @@ public:
 	CAdvMapWorldViewPanel *panelWorldView; // panel that holds all buttons and other ui in world view
 	CAdvMapPanel *activeMapPanel; // currently active panel (either main or world view, depending on current mode)
 
-	CDefHandler * worldViewIconsDef; // images for world view overlay
+	std::shared_ptr<CAnimation> worldViewIcons;// images for world view overlay
 
 	const CSpell *spellBeingCasted; //nullptr if none
 

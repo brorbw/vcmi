@@ -5,8 +5,8 @@ include_directories(${Boost_INCLUDE_DIRS} ${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_D
 
 set(battleAI_SRCS
 		StdInc.cpp
-        BattleAI.cpp
-        main.cpp
+		BattleAI.cpp
+		main.cpp
 )
 
 add_library(BattleAI SHARED ${battleAI_SRCS})

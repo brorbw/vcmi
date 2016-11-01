@@ -59,6 +59,31 @@ using namespace CSDL_Ext;
 
 CAdvMapInt *adventureInt;
 
+static void setScrollingCursor(ui8 direction)
+{
+	if(direction & CAdvMapInt::RIGHT)
+	{
+		if(direction & CAdvMapInt::UP)
+			CCS->curh->changeGraphic(ECursor::ADVENTURE, 33);
+		else if(direction & CAdvMapInt::DOWN)
+			CCS->curh->changeGraphic(ECursor::ADVENTURE, 35);
+		else
+			CCS->curh->changeGraphic(ECursor::ADVENTURE, 34);
+	}
+	else if(direction & CAdvMapInt::LEFT)
+	{
+		if(direction & CAdvMapInt::UP)
+			CCS->curh->changeGraphic(ECursor::ADVENTURE, 39);
+		else if(direction & CAdvMapInt::DOWN)
+			CCS->curh->changeGraphic(ECursor::ADVENTURE, 37);
+		else
+			CCS->curh->changeGraphic(ECursor::ADVENTURE, 38);
+	}
+	else if(direction & CAdvMapInt::UP)
+		CCS->curh->changeGraphic(ECursor::ADVENTURE, 32);
+	else if(direction & CAdvMapInt::DOWN)
+		CCS->curh->changeGraphic(ECursor::ADVENTURE, 36);
+}
 
 CTerrainRect::CTerrainRect()
 	: fadeSurface(nullptr),
@@ -202,13 +227,14 @@ void CTerrainRect::showPath(const SDL_Rect * extRect, SDL_Surface * to)
 			pn+=25;
 		if (pn>=0)
 		{
-			CDefEssential * arrows = graphics->heroMoveArrows;
+			const IImage * arrow = graphics->heroMoveArrows->getImage(pn);
+
 			int x = 32*(curPos.x-adventureInt->position.x)+CGI->mh->offsetX + pos.x,
 				y = 32*(curPos.y-adventureInt->position.y)+CGI->mh->offsetY + pos.y;
 			if (x< -32 || y< -32 || x>pos.w || y>pos.h)
 				continue;
-			int hvx = (x+arrows->ourImages[pn].bitmap->w)-(pos.x+pos.w),
-				hvy = (y+arrows->ourImages[pn].bitmap->h)-(pos.y+pos.h);
+			int hvx = (x + arrow->width())  - (pos.x + pos.w),
+				hvy = (y + arrow->height()) - (pos.y + pos.h);
 
 			SDL_Rect prevClip;
 			SDL_GetClipRect(to, &prevClip);
@@ -218,52 +244,44 @@ void CTerrainRect::showPath(const SDL_Rect * extRect, SDL_Surface * to)
 			{
 				if (hvx<0 && hvy<0)
 				{
-					Rect dstRect = genRect(32, 32, x + moveX, y + moveY);
-					CSDL_Ext::blit8bppAlphaTo24bpp(arrows->ourImages[pn].bitmap, nullptr, to, &dstRect);
+					arrow->draw(to, x + moveX, y + moveY);
 				}
 				else if(hvx<0)
 				{
-					Rect srcRect = genRect(arrows->ourImages[pn].bitmap->h-hvy, arrows->ourImages[pn].bitmap->w, 0, 0);
-					Rect dstRect = genRect(arrows->ourImages[pn].bitmap->h-hvy, arrows->ourImages[pn].bitmap->w, x + moveX, y + moveY);
-					CSDL_Ext::blit8bppAlphaTo24bpp(arrows->ourImages[pn].bitmap, &srcRect, to, &dstRect);
+					Rect srcRect = genRect(arrow->height() - hvy, arrow->width(), 0, 0);
+					arrow->draw(to, x + moveX, y + moveY, &srcRect);
 				}
 				else if (hvy<0)
 				{
-					Rect srcRect = genRect(arrows->ourImages[pn].bitmap->h, arrows->ourImages[pn].bitmap->w-hvx, 0, 0);
-					Rect dstRect = genRect(arrows->ourImages[pn].bitmap->h, arrows->ourImages[pn].bitmap->w-hvx, x + moveX, y + moveY);
-					CSDL_Ext::blit8bppAlphaTo24bpp(arrows->ourImages[pn].bitmap, &srcRect, to, &dstRect);
+					Rect srcRect = genRect(arrow->height(), arrow->width() - hvx, 0, 0);
+					arrow->draw(to, x + moveX, y + moveY, &srcRect);
 				}
 				else
 				{
-					Rect srcRect = genRect(arrows->ourImages[pn].bitmap->h-hvy, arrows->ourImages[pn].bitmap->w-hvx, 0, 0);
-					Rect dstRect = genRect(arrows->ourImages[pn].bitmap->h-hvy, arrows->ourImages[pn].bitmap->w-hvx, x + moveX, y + moveY);
-					CSDL_Ext::blit8bppAlphaTo24bpp(arrows->ourImages[pn].bitmap, &srcRect, to, &dstRect);
+					Rect srcRect = genRect(arrow->height() - hvy, arrow->width() - hvx, 0, 0);
+					arrow->draw(to, x + moveX, y + moveY, &srcRect);
 				}
 			}
 			else //standard version
 			{
 				if (hvx<0 && hvy<0)
 				{
-					Rect dstRect = genRect(32, 32, x, y);
-					CSDL_Ext::blit8bppAlphaTo24bpp(arrows->ourImages[pn].bitmap, nullptr, to, &dstRect);
+					arrow->draw(to, x, y);
 				}
 				else if(hvx<0)
 				{
-					Rect srcRect = genRect(arrows->ourImages[pn].bitmap->h-hvy, arrows->ourImages[pn].bitmap->w, 0, 0);
-					Rect dstRect = genRect(arrows->ourImages[pn].bitmap->h-hvy, arrows->ourImages[pn].bitmap->w, x, y);
-					CSDL_Ext::blit8bppAlphaTo24bpp(arrows->ourImages[pn].bitmap, &srcRect, to, &dstRect);
+					Rect srcRect = genRect(arrow->height() - hvy, arrow->width(), 0, 0);
+					arrow->draw(to, x, y, &srcRect);
 				}
 				else if (hvy<0)
 				{
-					Rect srcRect = genRect(arrows->ourImages[pn].bitmap->h, arrows->ourImages[pn].bitmap->w-hvx, 0, 0);
-					Rect dstRect = genRect(arrows->ourImages[pn].bitmap->h, arrows->ourImages[pn].bitmap->w-hvx, x, y);
-					CSDL_Ext::blit8bppAlphaTo24bpp(arrows->ourImages[pn].bitmap, &srcRect, to, &dstRect);
+					Rect srcRect = genRect(arrow->height(), arrow->width() - hvx, 0, 0);
+					arrow->draw(to, x, y, &srcRect);
 				}
 				else
 				{
-					Rect srcRect = genRect(arrows->ourImages[pn].bitmap->h-hvy, arrows->ourImages[pn].bitmap->w-hvx, 0, 0);
-					Rect dstRect = genRect(arrows->ourImages[pn].bitmap->h-hvy, arrows->ourImages[pn].bitmap->w-hvx, x, y);
-					CSDL_Ext::blit8bppAlphaTo24bpp(arrows->ourImages[pn].bitmap, &srcRect, to, &dstRect);
+					Rect srcRect = genRect(arrow->height() - hvy, arrow->width() - hvx, 0, 0);
+					arrow->draw(to, x, y, &srcRect);
 				}
 			}
 			SDL_SetClipRect(to, &prevClip);
@@ -296,9 +314,6 @@ void CTerrainRect::show(SDL_Surface * to)
 			showPath(&pos, to);
 		}
 	}
-	//SDL_BlitSurface(teren,&genRect(pos.h,pos.w,0,0),screen,&genRect(547,594,7,6));
-	//SDL_FreeSurface(teren);
-
 }
 
 void CTerrainRect::showAll(SDL_Surface * to)
@@ -306,7 +321,7 @@ void CTerrainRect::showAll(SDL_Surface * to)
 	// world view map is static and doesn't need redraw every frame
 	if (adventureInt->mode == EAdvMapMode::WORLD_VIEW)
 	{
-		MapDrawingInfo info(adventureInt->position, &LOCPLINT->cb->getVisibilityMap(), &pos, adventureInt->worldViewIconsDef);
+		MapDrawingInfo info(adventureInt->position, &LOCPLINT->cb->getVisibilityMap(), &pos, adventureInt->worldViewIcons);
 		info.scaled = true;
 		info.scale = adventureInt->worldViewScale;
 		adventureInt->worldViewOptions.adjustDrawingInfo(info);
@@ -451,38 +466,39 @@ CAdvMapInt::CAdvMapInt():
 	statusbar(ADVOPT.statusbarX,ADVOPT.statusbarY,ADVOPT.statusbarG),
 	heroList(ADVOPT.hlistSize, Point(ADVOPT.hlistX, ADVOPT.hlistY), ADVOPT.hlistAU, ADVOPT.hlistAD),
 	townList(ADVOPT.tlistSize, Point(ADVOPT.tlistX, ADVOPT.tlistY), ADVOPT.tlistAU, ADVOPT.tlistAD),
-	infoBar(Rect(ADVOPT.infoboxX, ADVOPT.infoboxY, 192, 192) ),
-	activeMapPanel(nullptr)
+	infoBar(Rect(ADVOPT.infoboxX, ADVOPT.infoboxY, 192, 192)), state(NA),
+  spellBeingCasted(nullptr), position(int3(0, 0, 0)), selection(nullptr),
+  updateScreen(false), anim(0), animValHitCount(0), heroAnim(0), heroAnimValHitCount(0),
+	activeMapPanel(nullptr), duringAITurn(false), scrollingDir(0), scrollingState(false)
 {
-	duringAITurn = false;
-	state = NA;
-	spellBeingCasted = nullptr;
+  adventureInt = this;
 	pos.x = pos.y = 0;
 	pos.w = screen->w;
 	pos.h = screen->h;
-	position = int3(0,0,0);
-	selection = nullptr;
 	townList.onSelect = std::bind(&CAdvMapInt::selectionChanged,this);
-	adventureInt=this;
 	bg = BitmapHandler::loadBitmap(ADVOPT.mainGraphic);
-	bgWorldView = BitmapHandler::loadBitmap(ADVOPT.worldViewGraphic);
-	scrollingDir = 0;
-	updateScreen  = false;
-	anim=0;
-	animValHitCount=0; //animation frame
-	heroAnim=0;
-	heroAnimValHitCount=0; // hero animation frame
-
+	if (ADVOPT.worldViewGraphic != "")
+	{
+		bgWorldView = BitmapHandler::loadBitmap(ADVOPT.worldViewGraphic);
+	}
+	else
+	{
+		bgWorldView = nullptr;
+		logGlobal->warn("ADVOPT.worldViewGraphic is empty => bitmap not loaded");
+	}
 	if (!bgWorldView)
 	{
 		logGlobal->warn("bgWorldView not defined in resolution config; fallback to VWorld.bmp");
 		bgWorldView = BitmapHandler::loadBitmap("VWorld.bmp");
 	}
-	worldViewIconsDef = CDefHandler::giveDef("VwSymbol.def");
+
+	worldViewIcons = std::make_shared<CAnimation>("VwSymbol");//todo: customize with ADVOPT
+	//preload all for faster map drawing
+	worldViewIcons->load();//TODO: make special method in CAnimation fro that
 
 	for (int g=0; g<ADVOPT.gemG.size(); ++g)
 	{
-		gems.push_back(CDefHandler::giveDef(ADVOPT.gemG[g]));
+		gems.push_back(new CAnimImage(ADVOPT.gemG[g], 0, 0, ADVOPT.gemX[g], ADVOPT.gemY[g]));
 	}
 
 	auto makeButton = [&] (int textID, std::function<void()> callback, config::ButtonInfo info, int key) -> CButton *
@@ -508,7 +524,7 @@ CAdvMapInt::CAdvMapInt():
 
 	panelMain = new CAdvMapPanel(nullptr, Point(0, 0));
 	// TODO correct drawing position
-	panelWorldView = new CAdvMapWorldViewPanel(bgWorldView, Point(heroList.pos.x - 2, 195), panelSpaceBottom, LOCPLINT->playerID);
+	panelWorldView = new CAdvMapWorldViewPanel(worldViewIcons, bgWorldView, Point(heroList.pos.x - 2, 195), panelSpaceBottom, LOCPLINT->playerID);
 
 	panelMain->addChildColorableButton(kingOverview);
 	panelMain->addChildColorableButton(underground);
@@ -577,16 +593,17 @@ CAdvMapInt::CAdvMapInt():
 
 	int iconColorMultiplier = player.getNum() * 19;
 	int wvLeft = heroList.pos.x - 2; // TODO correct drawing position
+	//int wvTop = 195;
 	for (int i = 0; i < 5; ++i)
 	{
-		panelWorldView->addChildIcon(std::pair<int, Point>(i, Point(wvLeft + 5, 253 + i * 20)), worldViewIconsDef, iconColorMultiplier);
+		panelWorldView->addChildIcon(std::pair<int, Point>(i, Point(5, 58 + i * 20)), iconColorMultiplier);
 		panelWorldView->addChildToPanel(new CLabel(wvLeft + 45, 263 + i * 20, EFonts::FONT_SMALL, EAlignment::TOPLEFT,
 												Colors::WHITE, CGI->generaltexth->allTexts[612 + i]));
 	}
 	for (int i = 0; i < 7; ++i)
 	{
-		panelWorldView->addChildIcon(std::pair<int, Point>(i +  5, Point(wvLeft +   5, 377 + i * 20)), worldViewIconsDef, iconColorMultiplier);
-		panelWorldView->addChildIcon(std::pair<int, Point>(i + 12, Point(wvLeft + 160, 377 + i * 20)), worldViewIconsDef, iconColorMultiplier);
+		panelWorldView->addChildIcon(std::pair<int, Point>(i +  5, Point(5, 182 + i * 20)), iconColorMultiplier);
+		panelWorldView->addChildIcon(std::pair<int, Point>(i + 12, Point(160, 182 + i * 20)), iconColorMultiplier);
 		panelWorldView->addChildToPanel(new CLabel(wvLeft + 45, 387 + i * 20, EFonts::FONT_SMALL, EAlignment::TOPLEFT,
 												Colors::WHITE, CGI->generaltexth->allTexts[619 + i]));
 	}
@@ -610,10 +627,7 @@ CAdvMapInt::~CAdvMapInt()
 {
 	SDL_FreeSurface(bg);
 
-	for(int i=0; i<gems.size(); i++)
-		delete gems[i];
-
-	delete worldViewIconsDef;
+	worldViewIcons->unload();
 }
 
 void CAdvMapInt::fshowOverview()
@@ -706,8 +720,7 @@ void CAdvMapInt::fshowSpellbok()
 
 	centerOn(selection);
 
-	auto   spellWindow = new CSpellWindow(genRect(595, 620, (screen->w - 620)/2, (screen->h - 595)/2), curHero(), LOCPLINT, false);
-	GH.pushInt(spellWindow);
+	GH.pushInt(new CSpellWindow(curHero(), LOCPLINT, false));
 }
 
 void CAdvMapInt::fadventureOPtions()
@@ -948,12 +961,21 @@ void CAdvMapInt::show(SDL_Surface * to)
 
 		if(scrollingDir)
 		{
+			setScrollingCursor(scrollingDir);
+			scrollingState = true;
 			updateScreen = true;
 			minimap.redraw();
 			if (mode == EAdvMapMode::WORLD_VIEW)
 				terrain.redraw();
 		}
+		else if(scrollingState)
+		{
+			CCS->curh->changeGraphic(ECursor::ADVENTURE, 0);
+			scrollingState = false;
+		}
 	}
+	for(int i = 0; i < 4; i++)
+		gems[i]->setFrame(LOCPLINT->playerID.getNum());
 	if(updateScreen)
 	{
 		int3 betterPos = LOCPLINT->repairScreenPos(position);
@@ -964,16 +986,16 @@ void CAdvMapInt::show(SDL_Surface * to)
 		}
 
 		terrain.show(to);
-		for(int i=0;i<4;i++)
-			blitAt(gems[i]->ourImages[LOCPLINT->playerID.getNum()].bitmap,ADVOPT.gemX[i],ADVOPT.gemY[i],to);
+		for(int i = 0; i < 4; i++)
+			gems[i]->showAll(to);
 		updateScreen=false;
 		LOCPLINT->cingconsole->show(to);
 	}
 	else if (terrain.needsAnimUpdate())
 	{
 		terrain.showAnim(to);
-		for(int i=0;i<4;i++)
-			blitAt(gems[i]->ourImages[LOCPLINT->playerID.getNum()].bitmap,ADVOPT.gemX[i],ADVOPT.gemY[i],to);
+		for(int i = 0; i < 4; i++)
+			gems[i]->showAll(to);
 	}
 
 	infoBar.show(to);
@@ -1349,11 +1371,8 @@ void CAdvMapInt::setPlayer(PlayerColor Player)
 
 	panelMain->setPlayerColor(player);
 	panelWorldView->setPlayerColor(player);
-	panelWorldView->recolorIcons(player, worldViewIconsDef, player.getNum() * 19);
+	panelWorldView->recolorIcons(player, player.getNum() * 19);
 	graphics->blueToPlayersAdv(resdatabar.bg,player);
-
-	//heroList.updateHList();
-	//townList.genList();
 }
 
 void CAdvMapInt::startTurn()

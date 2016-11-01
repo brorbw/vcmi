@@ -15,8 +15,8 @@
 #include "../Graphics.h"
 
 struct SDL_Surface;
-class CPicture;
 class CGuiHandler;
+class CPicture;
 
 struct SDL_KeyboardEvent;
 
@@ -90,11 +90,6 @@ public:
  */
 	std::vector<CIntObject *> children;
 
-	//FIXME: workaround
-	void deactivateKeyboard()
-	{
-		deactivate(KEYBOARD);
-	}
 
 /*
  * Public interface

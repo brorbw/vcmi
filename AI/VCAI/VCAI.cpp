@@ -9,7 +9,9 @@
 #include "../../lib/CModHandler.h"
 #include "../../lib/CGameState.h"
 #include "../../lib/NetPacks.h"
-
+#include "../../lib/serializer/CTypeList.h"
+#include "../../lib/serializer/BinarySerializer.h"
+#include "../../lib/serializer/BinaryDeserializer.h"
 
 /*
  * VCAI.cpp, part of VCMI engine
@@ -101,6 +103,7 @@ VCAI::VCAI(void)
 VCAI::~VCAI(void)
 {
 	LOG_TRACE(logAi);
+	finish();
 }
 
 void VCAI::availableCreaturesChanged(const CGDwelling *town)
@@ -704,7 +707,7 @@ void VCAI::showGarrisonDialog(const CArmedInstance *up, const CGHeroInstance *do
 	});
 }
 
-void VCAI::saveGame(COSer & h, const int version)
+void VCAI::saveGame(BinarySerializer & h, const int version)
 {
 	LOG_TRACE_PARAMS(logAi, "version '%i'", version);
 	NET_EVENT_HANDLER;
@@ -715,7 +718,7 @@ void VCAI::saveGame(COSer & h, const int version)
 	serializeInternal(h, version);
 }
 
-void VCAI::loadGame(CISer & h, const int version)
+void VCAI::loadGame(BinaryDeserializer & h, const int version)
 {
 	LOG_TRACE_PARAMS(logAi, "version '%i'", version);
 	NET_EVENT_HANDLER;
@@ -2750,7 +2753,10 @@ void VCAI::recruitHero(const CGTownInstance * t, bool throwing)
 void VCAI::finish()
 {
 	if(makingTurn)
+	{
 		makingTurn->interrupt();
+		makingTurn->join();
+	}
 }
 
 void VCAI::requestActionASAP(std::function<void()> whatToDo)

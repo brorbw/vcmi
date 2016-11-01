@@ -10,7 +10,6 @@ struct Rect;
 class CAnimImage;
 class CLabel;
 class CAnimation;
-class CDefHandler;
 
 namespace config
 {
@@ -111,7 +110,7 @@ public:
 
 	/// Appearance modifiers
 	void setIndex(size_t index, bool playerColoredButton=false);
-	void setImage(CAnimation* anim, bool playerColoredButton=false, int animFlags=0);
+	void setImage(std::shared_ptr<CAnimation> anim, bool playerColoredButton=false, int animFlags=0);
 	void setPlayerColor(PlayerColor player);
 
 	/// CIntObject overrides
@@ -268,7 +267,7 @@ public:
 	void wheelScrolled(bool down, bool in) override;
 	void clickLeft(tribool down, bool previousState) override;
 	void mouseMoved (const SDL_MouseMotionEvent & sEvent) override;
-	void showAll(SDL_Surface * to) override;	
+	void showAll(SDL_Surface * to) override;
 
 	 /// @param position coordinates of slider
 	 /// @param length length of slider ribbon, including left/right buttons

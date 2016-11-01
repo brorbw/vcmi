@@ -27,7 +27,8 @@
 #include "Graphics.h"
 #include "Client.h"
 #include "../lib/CConfigHandler.h"
-#include "../lib/Connection.h"
+#include "../lib/serializer/BinaryDeserializer.h"
+#include "../lib/serializer/BinarySerializer.h"
 #include "../lib/VCMI_Lib.h"
 #include "../lib/VCMIDirs.h"
 #include "../lib/NetPacks.h"
@@ -154,7 +155,7 @@ void init()
 		logGlobal->infoStream()<<"Screen handler: "<<pomtime.getDiff();
 		pomtime.getDiff();
 
-		graphics->loadHeroAnims();
+		graphics->load();
 		logGlobal->infoStream()<<"\tMain graphics: "<<pomtime.getDiff();
 		logGlobal->infoStream()<<"Initializing game graphics: "<<tmh.getDiff();
 
@@ -300,6 +301,7 @@ int main(int argc, char** argv)
 	const bfs::path logPath = VCMIDirs::get().userCachePath() / "VCMI_Client_log.txt";
 	CBasicLogConfigurator logConfig(logPath, console);
 	logConfig.configureDefault();
+	logGlobal->infoStream() << NAME;
 	logGlobal->infoStream() << "Creating console and configuring logger: " << pomtime.getDiff();
 	logGlobal->infoStream() << "The log file will be saved to " << logPath;
 
@@ -342,7 +344,6 @@ int main(int argc, char** argv)
 
 	conf.init();
 	logGlobal->infoStream() << "Loading settings: " << pomtime.getDiff();
-	logGlobal->infoStream() << NAME;
 
 	srand ( time(nullptr) );
 
@@ -933,6 +934,8 @@ void dispose()
 		CCS->soundh->release();
 	}
 	CMessage::dispose();
+
+	vstd::clear_pointer(graphics);
 
 	if(console)
 	{

@@ -54,6 +54,12 @@ void Res::ResourceSet::amax(const TResourceCap &val)
 		::vstd::amax(elem, val);
 }
 
+void Res::ResourceSet::amin(const TResourceCap &val)
+{
+	for(auto & elem : *this)
+		::vstd::amin(elem, val);
+}
+
 void Res::ResourceSet::positive()
 {
 	for(auto & elem : *this)

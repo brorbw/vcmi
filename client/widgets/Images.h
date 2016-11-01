@@ -8,7 +8,6 @@ struct Rect;
 class CAnimImage;
 class CLabel;
 class CAnimation;
-class CDefHandler;
 
 /*
  * Images.h, part of VCMI engine
@@ -24,12 +23,12 @@ class CDefHandler;
 class CPicture : public CIntObject
 {
 	void setSurface(SDL_Surface *to);
-public: 
+public:
 	SDL_Surface * bg;
 	Rect * srcRect; //if nullptr then whole surface will be used
 	bool freeSurf; //whether surface will be freed upon CPicture destruction
 	bool needRefresh;//Surface needs to be displayed each frame
-
+	bool visible;
 	operator SDL_Surface*()
 	{
 		return bg;
@@ -71,7 +70,7 @@ public:
 class CAnimImage: public CIntObject
 {
 private:
-	CAnimation* anim;
+	std::shared_ptr<CAnimation> anim;
 	//displayed frame/group
 	size_t frame;
 	size_t group;
@@ -81,8 +80,10 @@ private:
 	void init();
 
 public:
-	CAnimImage(std::string name, size_t Frame, size_t Group=0, int x=0, int y=0, ui8 Flags=0);
-	CAnimImage(CAnimation* anim, size_t Frame, size_t Group=0, int x=0, int y=0, ui8 Flags=0);
+	bool visible;
+
+	CAnimImage(const std::string & name, size_t Frame, size_t Group=0, int x=0, int y=0, ui8 Flags=0);
+	CAnimImage(std::shared_ptr<CAnimation> Anim, size_t Frame, size_t Group=0, int x=0, int y=0, ui8 Flags=0);
 	~CAnimImage();//d-tor
 
 	//size of animation

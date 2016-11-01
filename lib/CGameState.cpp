@@ -11,7 +11,6 @@
 #include "CHeroHandler.h"
 #include "mapObjects/CObjectHandler.h"
 #include "CModHandler.h"
-#include "Connection.h"
 #include "mapping/CMap.h"
 #include "mapping/CMapService.h"
 #include "StartInfo.h"
@@ -25,6 +24,8 @@
 #include "rmg/CMapGenerator.h"
 #include "CStopWatch.h"
 #include "mapping/CMapEditManager.h"
+#include "serializer/CTypeList.h"
+#include "serializer/CMemorySerializer.h"
 
 #ifdef min
 #undef min
@@ -896,7 +897,7 @@ void CGameState::initDuel()
 		else
 		{
 			CLoadFile lf(scenarioOps->mapname);
-			lf.serializer >> dp;
+			lf.serializer & dp;
 		}
 	}
 	catch(...)
@@ -2084,7 +2085,7 @@ PlayerRelations::PlayerRelations CGameState::getPlayerRelations( PlayerColor col
 void CGameState::apply(CPack *pack)
 {
 	ui16 typ = typeList.getTypeID(pack);
-	applierGs->apps[typ]->applyOnGS(this,pack);
+	applierGs->getApplier(typ)->applyOnGS(this,pack);
 }
 
 void CGameState::calculatePaths(const CGHeroInstance *hero, CPathsInfo &out)
