@@ -1218,6 +1218,8 @@ bool CCombinedArtifactInstance::ConstituentInfo::operator==(const ConstituentInf
 	return art == rhs.art && slot == rhs.slot;
 }
 
+CArtifactSet::~CArtifactSet() = default;
+
 const CArtifactInstance* CArtifactSet::getArt(ArtifactPosition pos, bool excludeLocked /*= true*/) const
 {
 	if(const ArtSlotInfo *si = getSlot(pos))
